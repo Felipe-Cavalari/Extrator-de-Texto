@@ -1,5 +1,6 @@
 import PyPDF2
 import pandas as pd
+import os
 
 #Função responsável pela extração de texto do PDF
 def Ict_Text_extractor(file, txt_file):
@@ -25,8 +26,24 @@ def Ict_Text_extractor(file, txt_file):
 
 
 
-def Ict_index_extractor(excel_file):
-    None
+def Ict_index_extractor(excel_file, index):
+    #pegando a extensão do arquivo
+    file_extension = os.path.splitext(excel_file)[1]
+    print('Extraindo os indices para a função')
+    print('')
+    print('Arquivo do tipo ' + file_extension)
+    #criando lista de indices
+    all_index = []
+
+    if file_extension == '.xlsx' or '.xls':
+        df = pd.read_excel(excel_file)
+        indexs = df.iloc[:, index]
+
+        for i in indexs:
+            all_index.append(i)
+    print('Todos os indices foram extraídos')
+    return all_index
+
 
 
 def Yes_or_No(choice):

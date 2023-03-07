@@ -1,25 +1,27 @@
-import os
-import re
+import os, re, shutil, time
 import pandas as pd
-import tkinter as tk
-import time
 from tkinter import filedialog
-from function import Ict_Text_extractor, Yes_or_No
+from function import Ict_Text_extractor, Yes_or_No, Ict_index_extractor
 
 #Perguntando se o usuário vai mandar alguma tabela de input para buscar os indices
 if not os.path.exists('./Banco de dados/'):
     print('A pasta do banco de dados não existe, criando....')
     os.makedirs('./Banco de dados')
     print('A pasta do banco de dados foi criada')
+else:
+    print('A pasta do banco de dados já existe')
 
-if not os.path.exists('./Banco de dados/Platts - Lista de Índices'):
+#salvando o arquivo de index na pasta banco
+if not os.path.exists('./Banco de dados/Platts - Lista de Índices.xlsx'):
     print('arquivo de indices não encontrado')
     print('_______________________________________________________')
-    print('lembrando que o arquivo precisa ter o nome de Platts - Lista de Índices')
-    time.sleep(3)
-    Platts_index = filedialog.askopenfilename(title='Selecione o Platts - Lista de incides', type=['Excel'])
+    print('lembrando que o arquivo precisa ter o nome de Platts - Lista de Índices e ser em formato xlsx')
+    time.sleep(2)
+    Platts_indices = filedialog.askopenfilename(title='Selecione o Platts - Lista de incides', filetypes=[('Excel Files', '*.xlsx *.xls')])
+    file_name = os.path.basename(Platts_indices)
+    db_file_path = './Banco de dados/' + file_name
+    shutil.copy(Platts_indices, db_file_path)
     
-
 else:
     print('contem arquivo de indices no banco de dados')
     choice = input('Deseja enviar um novo arquivo com novos indices? ')
@@ -27,10 +29,21 @@ else:
     if choice == 'sim':
         print('sim')
     elif choice == 'nao' or 'não':
-        print('não')
+        print('Você escolheu não enviar um novo arquivo!')
+        
+
+db_file = ('./Banco de dados/Platts - Lista de Índices.xlsx')
+print('Arquivo selecionado: ' + db_file + "\n")
+
+#Função para extraír os indices do excel
+
+all_index = Ict_index_extractor(db_file, 0)
+
+print(all_index)
 
 #Gerando variavel para selecionar o arquivo para ser extraido
-file = filedialog.askopenfilename(title='Selecione o Pdf')
+print('Selecione o arquivo PDF')
+file = filedialog.askopenfilename(title='Selecione o Pdf', filetypes=[('PDF Files', '*.pdf')])
 
 file_name = os.path.basename(file)
 #separando data do nome do arquivo
