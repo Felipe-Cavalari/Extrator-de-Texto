@@ -1,7 +1,7 @@
 import os, re, shutil, time
 import pandas as pd
 from tkinter import filedialog
-from function import Ict_Text_extractor, Yes_or_No, Ict_index_extractor
+from function import Ict_Text_extractor, Yes_or_No, Ict_index_extractor, Ict_regex, Ict_list_to_csv
 
 #Perguntando se o usuário vai mandar alguma tabela de input para buscar os indices
 if not os.path.exists('./Banco de dados/'):
@@ -39,7 +39,6 @@ print('Arquivo selecionado: ' + db_file + "\n")
 
 all_index = Ict_index_extractor(db_file, 0)
 
-print(all_index)
 
 #Gerando variavel para selecionar o arquivo para ser extraido
 print('Selecione o arquivo PDF')
@@ -51,7 +50,7 @@ file_name_dict = re.split('[._]', file_name)
 file_date = file_name_dict[1]
 
 #caminho para salvar os dados extraidos
-txt_path = './Dados extraidos'
+txt_path = '.\Dados extraidos\\'
 if not os.path.exists(txt_path):
     print('criando diretório')
     os.makedirs(txt_path)
@@ -60,7 +59,7 @@ else:
 
 
 #criando arquivo onde os dados vão ser colocados
-txt_file = txt_path + '/' + file_name_dict[0] + "_" + file_name_dict[1] + '_Results.txt'
+txt_file = txt_path+ file_name_dict[0] + "_" + file_name_dict[1] + '_Results.txt'
 
 #verificando se existe algum arquivo de texto com o mesmo nome
 if not os.path.exists(txt_file):
@@ -69,14 +68,35 @@ if not os.path.exists(txt_file):
 else:
     print('Arquivo com mesmo nome já existe, limpando conteudo do mesmo!')
     open(txt_file, 'w').close()
+    time.sleep(2)
 
 
 #Realizando a extração
 
 Ict_Text_extractor(file, txt_file)
 
+print('\n Abrindo texto e extraindo valores desejados:' + txt_file +' \n')
 
 
+with open(txt_file, 'r', encoding='utf-8') as text_extract:
+    text = text_extract.read()
+
+
+result = Ict_regex(all_index, text)
+
+#Caminho para salvar CSV
+pasta_csv = './Valores csv/'
+if not os.path.exists(pasta_csv):
+    os.makedirs(pasta_csv)
+
+arquivo_csv = file_name_dict[0] + "_" + file_name_dict[1]
+caminho_csv = pasta_csv + arquivo_csv
+
+Ict_list_to_csv(result, file_date, caminho_csv)
+
+time.sleep(1)
+
+print('\n\n Dados extraidos e convertidos para CSV\n')
 
 
 

@@ -1,6 +1,6 @@
 import PyPDF2
 import pandas as pd
-import os
+import os, re
 
 #Função responsável pela extração de texto do PDF
 def Ict_Text_extractor(file, txt_file):
@@ -43,6 +43,33 @@ def Ict_index_extractor(excel_file, index):
             all_index.append(i)
     print('Todos os indices foram extraídos')
     return all_index
+
+
+def Ict_regex(all_index, text):
+    result = {}
+    for i in all_index:
+        regex = re.compile(str(i) + r'.*?\d+\.\d{2}')
+
+        padrao = re.search(regex, text)
+
+        if padrao:
+          key = padrao.group(0).split()[0]
+          value = padrao.group(0).split()[-1]
+          result[key] = value
+           
+        else:
+          key = i
+          value = "Null"
+          result[key] = value
+    
+    return result
+
+
+def Ict_list_to_csv(df, file_date, csv_path):
+    header = ['Código do Índice', file_date]
+
+    ict_csv = pd.DataFrame(list(df.items()), columns=header)
+    ict_csv.to_csv(csv_path, index=False)
 
 
 
